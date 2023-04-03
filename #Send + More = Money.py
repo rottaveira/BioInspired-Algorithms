@@ -17,13 +17,12 @@ def numConcat(num1, num2):
 
 def GetSample():
     #return random.sample(range(0, 9), 8)
-    return random.sample(range(0, 10), 10)
+    return random.sample(range(0, 10), elementSize)
 '''
 use the vector size as the same of char qtd. It will facilitate the crossover step when apply the circular approach.
 '''
 
-def Evaluate(sendmory):
-    
+def Evaluate(sendmory): 
     send = numConcat(numConcat(numConcat(sendmory[0],sendmory[1]),sendmory[2]),sendmory[3])
     more = numConcat(numConcat(numConcat(sendmory[4],sendmory[5]),sendmory[6]),sendmory[1])
     money= numConcat(numConcat(numConcat(numConcat(sendmory[4],sendmory[5]),sendmory[2]),sendmory[1]),sendmory[7])
@@ -114,47 +113,69 @@ def CiclicCrossover(parents, uniqueParents=True):
                 childrens.append(list(map(NormalizeChildren, children1, dad)))
                 childrens.append(list(map(NormalizeChildren, children2, mom)))
                 break
-        
-    return Mutation(childrens)
+    
+    Mutation(childrens)
+    return childrens[0:60]
 
-def Mutation(childrens):
-    for element in childrens:
-        random_list = [random.randint(0, len(element)-1), random.randint(0, len(element)-1)]
-        element[random_list[0]],element[random_list[1]] =element[random_list[1]],element[random_list[0]]
+def Mutation(childrens, percent=5): 
+
+    elements = random.sample(range(0, len(childrens)), percent)
+
+    for element in elements:
+        random_list = [random.randint(0, elementSize-1), random.randint(0, elementSize-1)]
+        childrens[element][random_list[0]],childrens[element][random_list[1]] = childrens[element][random_list[1]],childrens[element][random_list[0]]
+    
     return childrens
     
 def Main(): 
-
+    m = 0
     for sample in range(size):  
         sampleList.append(GetSample())
 
     classification ={}    
     generation = 0
     while any(v == 0 for v in classification.values()) == False:
-        
+        m=0
         print('Generation: '+str(generation))
         
         for n in sampleList:
+            if n[4] == 0:
+                m = m+1
             classification.update({sampleList.index(n):Evaluate(n)})
 
         print('Greatest: '+str(min(classification.values())))
 
+        #min
+        sortClassification = dict(sorted(classification.items(), key=lambda x:x[1]))
+        bestSamples = [sampleList[sample] for sample in  list({k: sortClassification[k] for k in list(sortClassification)[:40]}.keys())]
         #Min to max classification
         reclassificated = {k: subtract(max(classification.values())+1,v) for k, v in classification.items()}
         sortClassification = dict(sorted(reclassificated.items(), key=lambda x:x[1]))
         
-        #parents = Roulette(sortClassification, size)
-        parents = Tournment(sortClassification,4,size)
+        parents = Roulette(sortClassification, size)
+        #parents = Tournment(sortClassification,2,size)
         #Truncating(classification,False,60)
-        sampleList.clear() 
+
+
+        sampleList.clear()
+        sampleList.extend(bestSamples)
         sampleList.extend(CiclicCrossover(parents))
         generation = generation+1
+        print('M quantity on '+str(generation)+' generation = '+str(m))
 
     print('searched on '+str(generation)+' generation')
 
+elementSize = 10
 size = 100
 sampleList=[]
- 
+
+
 Main()
 print("end")
 
+'''
+TODO
+tx de mutação 5% (apenas 5/100 ira sofrer mutacao)
+tx de crossover 60% (60/100 filhos)
+misturar filhos com os melhores pais
+'''
