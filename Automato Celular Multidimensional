@@ -1,0 +1,48 @@
+import random
+import matplotlib.pyplot as plt
+
+# tamanho da grade
+n = 100
+
+# criação da grade inicial aleatória
+grid = [[random.randint(0, 1) for y in range(n)] for x in range(n)]
+
+# regras de transição
+def transition_rule(x, y, grid):
+    # número de células vizinhas vivas
+    alive_neighbors = 0
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            # verifica se a célula vizinha está viva
+            if grid[(x+i)%n][(y+j)%n] == 1:
+                alive_neighbors += 1
+    # subtrai a célula central
+    alive_neighbors -= grid[x][y]
+
+    # regra de transição
+    if grid[x][y] == 1 and (alive_neighbors < 2 or alive_neighbors > 3):
+        return 0
+    elif grid[x][y] == 0 and alive_neighbors == 3:
+        return 1
+    else:
+        return grid[x][y]
+
+
+# iterações do autômato celular
+for i in range(100):
+    # criação de uma nova grade vazia
+    new_grid = [[0 for y in range(n)] for x in range(n)]
+    for x in range(n):
+        for y in range(n):
+            # aplicação da regra de transição para cada célula
+            new_grid[x][y] = transition_rule(x, y,grid)
+    # atualização da grade anterior
+    grid = new_grid
+
+# exibição da grade final
+for row in grid:
+    print(''.join(str(cell) for cell in row))
+
+# plotagem da grade final
+plt.imshow(grid, cmap="binary")
+plt.show()

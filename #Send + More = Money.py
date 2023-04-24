@@ -7,8 +7,8 @@ POPULATION_SIZE = 100
 POPULATION=[]
 TX_CROSSOVER = math.ceil(POPULATION_SIZE *.6)
 TX_PARENTS = math.ceil(POPULATION_SIZE*.4)
-MAX_GENERATIONS = 50
-MAX_EXECUTIONS = 1000
+MAX_GENERATIONS = 100
+MAX_EXECUTIONS = 100
 
 def getKey(dictionary, val):
     for key, value in dictionary.items():
@@ -194,7 +194,7 @@ if __name__ == '__main__':
             reclassificated = {k: subtract(max(classification.values())+1,v) for k, v in classification.items()}
             sortMaxClassification = dict(sorted(reclassificated.items(), key=lambda x:x[1]))
             
-            #parents = Roulette(sortMaxClassification, POPULATION_SIZE)
+            #arents = Roulette(sortMaxClassification, POPULATION_SIZE)
             parents = Tournment(sortMinClassification,3,POPULATION_SIZE)
             #Truncating(classification,False,60)
 
@@ -213,16 +213,16 @@ if __name__ == '__main__':
 ''' 
 COCA+COLA=OASIS
 
-1000 execuções / 50 gerações:
+1000 execuções com 50 gerações:
 Rolleta - 
 acertos: 38,7% 
 multiplos acertos: 16,8%
-prematuros: 96%
+prematuros ( < 25 gerações): 96%
 
 Torneio - Tour 2
 acertos: 6,2% 
 multiplos acertos: 3%
-prematuros: 1,9%
+prematuros ( < 25 gerações): 1,9%
 
 
 
